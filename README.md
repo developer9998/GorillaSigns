@@ -23,3 +23,4 @@ The filtering used on the sign's image, this can be Point, Bilinear, and Triline
 
 ## Resolution
 The resolution (height and width) of the sign's image, this can be 1024 to 4096.
+
