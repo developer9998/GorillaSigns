@@ -1,7 +1,7 @@
 ### GorillaSigns
 
 GorillaSigns is a mod for Gorilla Tag that lets you hold custom signs.                                 
-***This mod uses fchb1239's UnityImageDownloader repository: https://github.com/fchb1239/UnityImageDownloader                                 
+*This mod uses fchb1239's UnityImageDownloader repository: https://github.com/fchb1239/UnityImageDownloader                                 
 
 ## How do I add my own images?
 When you open Gorilla Tag, an images folder will be made on your PC in the mod folder.                                 
