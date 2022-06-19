@@ -108,7 +108,17 @@ namespace GorillaSigns.Main
 
         public static void UpdateImage()
         {
-            LoadImage();
+            canChange = true;
+        }
+        public void Update()
+        {
+            /* Code here runs every frame when the mod is enabled */
+            if (canChange)
+            {
+                LoadImage();
+                canChange = false;
+            }
+
         }
     }
 }
