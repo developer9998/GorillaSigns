@@ -1,4 +1,4 @@
-﻿using Utilla;
+using Utilla;
 using System;
 using BepInEx;
 using System.IO;
