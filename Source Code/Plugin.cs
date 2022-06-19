@@ -24,18 +24,14 @@ namespace GorillaSigns.Main
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class Plugin : BaseUnityPlugin
     {
-        static public string imagePath;
-        static public GameObject rightpalm;
-        static public GameObject signObject;
+        public static int res;
+        public static int current;
+        public static int showSign;
+        public static int imageMode;
+        public static string imagePath;
+        public static GameObject signObject;
         public static readonly List<string> pngImagesPublic = new List<string>();
         public static readonly List<string> pngImageNames = new List<string>();
-        static public int showSign;
-        public static int current;
-
-        public static int res;
-        public static int imageMode;
-
-        private static bool canChange = false;
 
         public void Awake()
         {
@@ -45,22 +41,22 @@ namespace GorillaSigns.Main
 
         void OnGameInitialized(object sender, EventArgs e)
         {
-            rightpalm = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R/palm.01.R/");
             GetFolder();
             CreateObject();
-            loadImag();
+            LoadImage();
+            GetData();
+        }
+
+        void GetData()
+        {
             showSign = PlayerPrefs.GetInt("GorillaSignsEnabled", 1);
             res = PlayerPrefs.GetInt("GorillaSignsImageResu", 1);
             imageMode = PlayerPrefs.GetInt("GorillaSignsImageMode", 1);
 
             if (showSign == 1)
-            {
                 signObject.SetActive(true);
-            }
             else
-            {
                 signObject.SetActive(false);
-            }
         }
 
         void GetFolder()
@@ -80,74 +76,35 @@ namespace GorillaSigns.Main
                 pngImageNames.Add(fileName[i]);
                 pngImagesPublic.Add(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Images\\" + fileName[i]);
             }
+            pngImageNames.Add("Mirror");
+            pngImagesPublic.Add("Mirror");
         }
 
         void CreateObject()
         {
             Stream manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GorillaSigns.Resources.imagesign");
             AssetBundle assetBundle = AssetBundle.LoadFromStream(manifestResourceStream);
-            GameObject signTemporaryObject = assetBundle.LoadAsset<GameObject>("sign");
-            signObject = Instantiate(signTemporaryObject);
+            GameObject signTemporaryObject = assetBundle.LoadAsset<GameObject>("mirrorsign"); // im so dumb
+            signObject = Instantiate(signTemporaryObject); // keep your eyes peeled nachoengine
 
             signObject.transform.position = new Vector3(0.001f, 0.01f, 0.003f);
-            signObject.transform.rotation = Quaternion.identity; // fuck quaternions
+            signObject.transform.rotation = Quaternion.identity; // fuck quaternions - if you used Euler it would be easier, but yeah i agree xD
             signObject.transform.localScale = new Vector3(1.22f, 1.22f, 1.22f);
             signObject.transform.SetParent(GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R/palm.01.R/").transform, false);
         }
 
-        void loadImag()
+        // Shortened down the code a little, thought it would help ^v^
+        public static void LoadImage()
         {
-            StartCoroutine(LoadImage());
-        }
-
-        private IEnumerator LoadImage()
-        {
-            var imageGet = GetImageRequest();
-            yield return imageGet.SendWebRequest();
             Texture2D tex = new Texture2D(1024 * res, 1024 * res, TextureFormat.RGB24, false);
-            tex.LoadImage(imageGet.downloadHandler.data);
+            tex.filterMode = (FilterMode)imageMode;
 
-            if (imageMode == 1)
-            {
-                tex.filterMode = FilterMode.Bilinear;
-            }
-            else
-            if (imageMode == 2)
-            {
-                tex.filterMode = FilterMode.Trilinear;
+            byte[] bytes = File.ReadAllBytes(pngImagesPublic[current]);
+            tex.LoadImage(bytes);
+            tex.Apply();
 
-            }
-            else
-            if (imageMode == 0)
-            {
-                tex.filterMode = FilterMode.Point;
-            }
-
-            signObject.transform.GetChild(0).GetComponent<MeshRenderer>().materials[1].mainTexture = tex;
-        }
-
-        private UnityWebRequest GetImageRequest()
-        {
-            var request = new UnityWebRequest(pngImagesPublic[current], "GET");
-
-            request.downloadHandler = new DownloadHandlerBuffer();
-
-            return request;
-        }
-
-        public static void UpdateImage()
-        {
-            canChange = true;
-        }
-
-        public void Update()
-        {
-            /* Code here runs every frame when the mod is enabled */
-            if (canChange)
-            {
-                canChange = false;
-                StartCoroutine(LoadImage());
-            }
+            signObject.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().materials[1].mainTexture = tex;
+            Console.WriteLine("Sucessfully applied texture to the very cool sign"); // keeping this in because very cool sign 😎
         }
     }
 }

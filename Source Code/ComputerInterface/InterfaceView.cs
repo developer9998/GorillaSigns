@@ -43,14 +43,23 @@ namespace GorillaSigns.ComputerInterface
 			SetText(str =>
 			{
 				str.BeginCenter().Repeat("=", SCREEN_WIDTH).AppendLine();
-				str.AppendClr("Gorilla Signs", highlightColor).AppendLine();
+				str.AppendClr($"{PluginInfo.Name} v{PluginInfo.Version}", highlightColor).AppendLine();
 				str.Append("A cosmetic mod by dev9998").AppendLine();
 				str.Repeat("=", SCREEN_WIDTH).EndAlign().AppendLines(2);
-				str.AppendLine(_selectionHandler.GetIndicatedText(0, $"<color={(showSign ? "#" + highlightColor : "white")}>[{enableDisableText}]</color>")).AppendLine();
-				str.AppendLine(_selectionHandler.GetIndicatedText(1, $"Image: {Plugin.pngImageNames[Plugin.current]}"));
-				str.AppendLine(_selectionHandler.GetIndicatedText(2, $"Filter Mode: {imageModeText}"));
-				str.AppendLine(_selectionHandler.GetIndicatedText(3, $"Resolution: {Plugin.res * 1024}"));
-				str.AppendLines(1).BeginColor("ffffff10").AppendLine("  ▲/▼ Select  Enter/◀/▶ Adjust").EndColor();
+				if (_selectionHandler.MaxIdx == 3)
+                {
+					str.AppendLine(_selectionHandler.GetIndicatedText(0, $"<color={(showSign ? "#" + highlightColor : "white")}>[{enableDisableText}]</color>")).AppendLine();
+					str.AppendLine(_selectionHandler.GetIndicatedText(1, $"Image: {Plugin.pngImageNames[Plugin.current]}"));
+					str.AppendLine(_selectionHandler.GetIndicatedText(2, $"Filter Mode: {imageModeText}"));
+					str.AppendLine(_selectionHandler.GetIndicatedText(3, $"Resolution: {Plugin.res * 1024}"));
+					str.AppendLines(1).BeginColor("ffffff10").AppendLine("  ▲/▼ Select  Enter/◀/▶ Adjust").EndColor();
+				}
+				else
+                {
+					str.AppendLine(_selectionHandler.GetIndicatedText(0, $"<color={(showSign ? "#" + highlightColor : "white")}>[{enableDisableText}]</color>")).AppendLine();
+					str.AppendLine(_selectionHandler.GetIndicatedText(1, $"Image: {Plugin.pngImageNames[Plugin.current]}"));
+					str.AppendLines(3).BeginColor("ffffff10").AppendLine("  ▲/▼ Select  Enter/◀/▶ Adjust").EndColor();
+				}
 			});
 		}
 
@@ -61,17 +70,29 @@ namespace GorillaSigns.ComputerInterface
 			{
 				case 1:
 					Plugin.current = Mathf.Clamp(Plugin.current + offset, 0, Plugin.pngImagesPublic.Count - 1);
-					Plugin.UpdateImage();
+					if (Plugin.current == Plugin.pngImagesPublic.Count - 1)
+                    {
+						Plugin.signObject.transform.GetChild(0).gameObject.SetActive(false);
+						Plugin.signObject.transform.GetChild(1).gameObject.SetActive(true);
+						_selectionHandler.MaxIdx = 1;
+					}
+					else
+					{
+						Plugin.signObject.transform.GetChild(0).gameObject.SetActive(true);
+						Plugin.signObject.transform.GetChild(1).gameObject.SetActive(false);
+						Plugin.LoadImage();
+						_selectionHandler.MaxIdx = 3;
+					}
 					break;
 				case 2:
 					Plugin.imageMode = Mathf.Clamp(Plugin.imageMode + offset, 0, 2);
 					PlayerPrefs.SetInt("GorillaSignsImageMode", Plugin.imageMode);
-					Plugin.UpdateImage();
+					Plugin.LoadImage();
 					break;
 				case 3:
 					Plugin.res = Mathf.Clamp(Plugin.res + offset, 1, 4);
 					PlayerPrefs.SetInt("GorillaSignsImageResu", Plugin.res);
-					Plugin.UpdateImage();
+					Plugin.LoadImage();
 					break;
 			}
 		}
