@@ -28,3 +28,6 @@ The filtering used on the sign's image, this can be Point, Bilinear, and Triline
 
 ## Resolution
 The resolution (height and width) of the sign's image, this can be 1024 to 4096.
+
+## License
+This product is not affiliated with Gorilla Tag or Another Axiom LLC and is not endorsed or otherwise sponsored by Another Axiom LLC. Portions of the materials contained herein are property of Another Axiom LLC. ©2021 Another Axiom LLC.
