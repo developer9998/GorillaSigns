@@ -90,7 +90,7 @@ namespace GorillaSigns.Main
             signObject.transform.position = new Vector3(0.001f, 0.01f, 0.003f);
             signObject.transform.rotation = Quaternion.identity; // fuck quaternions - if you used Euler it would be easier, but yeah i agree xD
             signObject.transform.localScale = new Vector3(1.22f, 1.22f, 1.22f);
-            signObject.transform.SetParent(GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R/palm.01.R/").transform, false);
+            signObject.transform.SetParent(GorillaTagger.Instance.offlineVRRig.rightHandTransform.parent.Find("palm.01.R"), false);
         }
 
         // Shortened down the code a little, thought it would help ^v^
